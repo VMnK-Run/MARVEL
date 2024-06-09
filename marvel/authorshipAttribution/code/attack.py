@@ -204,8 +204,6 @@ def main():
         eval_dataset = CodeBertTextDataset(tokenizer, args, args.eval_data_file)
     elif args.model_type == 'graphcodebert':
         eval_dataset = GraphCodeBertTextDataset(tokenizer, args, args.eval_data_file)
-    elif args.model_type == 'codet5':
-        eval_dataset = CodeT5TextDataset(tokenizer, args, args.eval_data_file)
     elif args.model_type == 'unixcoder':
         eval_dataset = UniXCoderTextDataset(tokenizer, args, args.eval_data_file)
     print(len(eval_dataset), len(source_codes), flush=True)
@@ -232,8 +230,6 @@ def main():
                 true_label = example[1].item()
             elif args.model_name == 'graphcodebert':
                 true_label = example[3].item()
-            elif args.model_name == 'codet5':
-                true_label = example[1].item()
             elif args.model_name == 'unixcoder':
                 true_label = example[1].item()
                             

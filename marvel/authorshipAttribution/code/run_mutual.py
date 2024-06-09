@@ -691,8 +691,6 @@ def main():
                         help="Whether to run eval on the dev set.")
     parser.add_argument("--do_test", action='store_true',
                         help="Whether to run eval on the dev set.")
-    parser.add_argument("--alternately", action='store_true',
-                        help="Whether to run eval on the dev set.")
     parser.add_argument("--language_type", type=str, default="python",
                         help="The programming language type of dataset")
     parser.add_argument("--evaluate_during_training", action='store_true',
