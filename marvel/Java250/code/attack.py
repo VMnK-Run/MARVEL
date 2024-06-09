@@ -29,6 +29,7 @@ MODEL_CLASSES = {
     'unixcoder': (RobertaConfig, RobertaModel, RobertaTokenizer, UniXCoder, UniXCodernoise, UniXCoder_twoContact)
 }
 
+
 def set_seed(args):
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -49,7 +50,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     ## Required parameters
-    parser.add_argument("--eval_data_file", default='../dataset/valid.txt', type=str,
+    parser.add_argument("--eval_data_file", default='../dataset/test.txt', type=str,
                         help="An optional input evaluation data file to evaluate the perplexity on (a text file).")
     parser.add_argument("--cache_dir", default="", type=str,
                         help="Optional directory to store the pre-trained models downloaded from s3 (instread of the default one)")
@@ -65,33 +66,29 @@ def main():
                         help="info")
     parser.add_argument("--model_dir", default=None, type=str,
                         help="model_dir")
-    parser.add_argument("--subs_path", default=None, type=str,
-                        help="model_dir")
     parser.add_argument("--output_code", default=0, type=int,
                         help="model_dir")
+    parser.add_argument("--index", nargs='+',
+                        help="Optional input sequence length after tokenization.")
     parser.add_argument("--eval_batch_size", default=8, type=int,
                         help="eval batch size")
-    parser.add_argument("--save_name", default='model.bin', type=str,
+    parser.add_argument("--save_name", default='model1_attention.bin', type=str,
                         help="An optional input evaluation data file to evaluate the perplexity on (a text file).")
 
     args = parser.parse_args()
     args.device = torch.device(device)
+    pool = multiprocessing.Pool(cpu_cont)
     
     # Set seed
     args.seed = 123456
-    args.number_labels = 66
+    args.number_labels = 250
     # args.eval_batch_size = 32
-    args.language_type = 'python'
-    args.n_gpu = torch.cuda.device_count()
+    args.language_type = 'java'
     args.block_size = 512
     args.use_ga = True
-    args.code_length = 448
-    args.data_flow_length = 64
-    
-
-    set_seed(args)
-    
-    print("==========Loading Model===========", flush=True)
+    args.code_length = 384
+    args.data_flow_length = 128
+    print("==========Loading Model===========")
 
     if args.model_type == "codebert":
         args.config_name = "microsoft/codebert-base"
@@ -114,8 +111,7 @@ def main():
         args.base_model = "microsoft/unixcoder-base"
         args.model_name = 'unixcoder'
         args.code_length = 512
-        args.data_flow_length = 0      
-        
+        args.data_flow_length = 0     
 
     config_class, model_class, tokenizer_class, Model, Model_Noise, Model_Contact = MODEL_CLASSES[args.model_type]
 
@@ -124,9 +120,8 @@ def main():
     tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name)
     model = model_class.from_pretrained(args.model_name_or_path,config=config)
 
-
     outputdir = "../model/{}/checkpoint-best-acc/{}_{}_model.bin".format(args.model_type, args.model_type, args.save_name)
-    
+
     if args.save_name == 'original':
         model = Model(model,config,tokenizer,args)
         model.config.ouput_attentions=True
@@ -151,24 +146,32 @@ def main():
     tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name,
                                                 do_lower_case=False,
                                                 cache_dir=args.cache_dir if args.cache_dir else None)
-
     codebert_mlm = RobertaForMaskedLM.from_pretrained(args.base_model)
     tokenizer_mlm = RobertaTokenizer.from_pretrained(args.base_model)
-
+    
     if args.attack_name == 'alert':
         attacker = AlertAttacker(args, model, tokenizer, codebert_mlm, tokenizer_mlm, use_bpe=1, threshold_pred_score=0)
-        print("======Get Alert Attacker======", flush=True)
+        print("======Get Alert Attacker======")
         source_codes = []
         substs = []
-        subs_path = "../dataset/substitutions/{}_valid_subs.jsonl".format(args.model_type)
+        if args.model_type == 'graphcodebert':
+            subs_path = "../dataset/substitutions/{}_test_subs_{}_{}.jsonl".format('graphcodebert', args.index[0], args.index[1])
+        else:
+            subs_path = "../dataset/substitutions/{}_test_subs_{}_{}.jsonl".format('codebert', args.index[0], args.index[1])
+        
         with open(subs_path) as rf:
             for line in rf:
                 item = json.loads(line.strip())
-                source_codes.append(item["code"].replace("\\n", "\n").replace("\"", '"'))
+                source_codes.append(item["code"].replace("\\n", "\n").replace('\"', '"'))
                 substs.append(item["substitutes"])
 
+
     elif args.attack_name == 'mhm':
-        codes_file_path = "../dataset/substitutions/{}_valid_subs.jsonl".format(args.model_type)
+        if args.model_type == 'graphcodebert':
+            codes_file_path = "../dataset/substitutions/{}_test_subs_{}_{}.jsonl".format('graphcodebert', args.index[0], args.index[1])
+        else:
+            codes_file_path = "../dataset/substitutions/{}_test_subs_{}_{}.jsonl".format('codebert', args.index[0], args.index[1])
+        
         print(codes_file_path)
         source_codes = []
         substs = []
@@ -177,16 +180,16 @@ def main():
                 item = json.loads(line.strip())
                 source_codes.append(item["code"].replace("\\n", "\n").replace("\"", '"'))
                 substs.append(item["substitutes"])
-
         code_tokens = []
         for index, code in enumerate(source_codes):
-            code_tokens.append(get_identifiers(code, "python")[1])
+            code_tokens.append(get_identifiers(code, "java")[1])
 
         id2token, token2id = build_vocab(code_tokens, 5000)
         print("======Get MHM Attacker======", flush=True)
         attacker = MHMAttacker(args, model, codebert_mlm, tokenizer, token2id, id2token)
-        
+    
     elif args.attack_name == 'coda':
+        print("======Get CODA Attacker======")
         fasttext_model = fasttext.load_model("../../../utils/fasttext_model.bin")
         codebert_mlm.to('cuda')
         generated_substitutions = json.load(open('../dataset/substitutions/coda_%s_all_subs.json' % (args.model_name), 'r'))
@@ -198,28 +201,29 @@ def main():
                 source_codes.append(line.split(' <CODESPLIT> ')[0].strip().replace("\\n", "\n").replace('\"', '"'))        
 
     if args.model_type == 'codebert':
-        eval_dataset = CodeBertTextDataset(tokenizer, args, args.eval_data_file)
+        eval_dataset = CodeBertTextDataset(tokenizer, args, args.eval_data_file, pool)
     elif args.model_type == 'graphcodebert':
-        eval_dataset = GraphCodeBertTextDataset(tokenizer, args, args.eval_data_file)
+        eval_dataset = GraphCodeBertTextDataset(tokenizer, args, args.eval_data_file, pool)
     elif args.model_type == 'unixcoder':
-        eval_dataset = UniXCoderTextDataset(tokenizer, args, args.eval_data_file)
-    print(len(eval_dataset), len(source_codes), flush=True)
+        eval_dataset = UniXCoderTextDataset(tokenizer, args, args.eval_data_file, pool)
+    print(len(eval_dataset), len(source_codes))
     start_time = time.time()
     total_cnt = 0
     success_attack = 0
     tmp_final_code = " "
-    if not os.path.exists('../log'):
-        os.mkdir('../log')
+    query_times = 0
     prefix = '../log/attack_log'
     if not os.path.exists(prefix):
         os.mkdir(prefix)
-
-    query_times = 0
-
     for index, example in enumerate(eval_dataset):
-        code = source_codes[index]
+        if index < int(args.index[0]) or index >= int(args.index[1]):
+            continue
+        if args.attack_name == 'coda':
+            code = source_codes[index]
+        else:
+            code = source_codes[index - int(args.index[0])]
         if args.attack_name == 'mhm':
-            subs = substs[index]
+            subs = substs[index - int(args.index[0])]
             orig_prob, orig_label = model.get_results([example], args.eval_batch_size)
             orig_prob = orig_prob[0]
             orig_label = orig_label[0]
@@ -229,7 +233,7 @@ def main():
                 true_label = example[3].item()
             elif args.model_name == 'unixcoder':
                 true_label = example[1].item()
-                            
+            
             if true_label != orig_label:
                 is_success = -4
             else:
@@ -243,7 +247,7 @@ def main():
                 else:
                     is_success = -1
         if args.attack_name == 'alert':
-            subs = substs[index]
+            subs = substs[index - int(args.index[0])]
             code, prog_length, final_code, true_label, orig_label, temp_label, is_success, variable_names, names_to_importance_score, nb_changed_var, nb_changed_pos, replaced_words, invocation_number1, min_gap_prob1 = attacker.greedy_attack(example, code, subs)
 
             if is_success == -1 and args.use_ga:
@@ -252,11 +256,9 @@ def main():
 
             tmp_final_code = final_code
         if args.attack_name == 'coda':
-            try:
-                is_success, invocation_number, gap_time, final_code, min_gap_prob = attacker.attack(example, code) 
-                tmp_final_code = final_code           
-            except:
-                continue
+            is_success, invocation_number, gap_time, final_code, min_gap_prob = attacker.attack(example, code) 
+            tmp_final_code = final_code           
+
         if is_success >= -1:
             # 如果原来正确
             total_cnt += 1
@@ -282,7 +284,6 @@ def main():
 
     print("Success rate: {}".format(1.0 * success_attack / total_cnt))
     print("Successful items count: {}".format(success_attack))
-    print("Total count: {} \nIndex: {} \nTime: {}".format(total_cnt, index, end_time - start_time))
-    
+    print("Total count: {} \nIndex: {} \nTime: {}".format(total_cnt, index, end_time - start_time))   
 if __name__ == '__main__':
     main()
