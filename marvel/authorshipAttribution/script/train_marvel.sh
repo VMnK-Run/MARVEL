@@ -13,4 +13,4 @@ CUDA_VISIBLE_DEVICES=0 python ../code/run_mutual.py \
         --train_batch_size=8 \
         --eval_batch_size=8 \
         --alpha=0.3 \
-        --max_adv_step=3 2>&1 | tee ../log/train_log/$model_type/train_$log_name.log
+        --max_adv_step=3 2>&1 | tee train_$log_name.log

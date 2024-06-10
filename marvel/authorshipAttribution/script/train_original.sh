@@ -13,4 +13,4 @@ CUDA_VISIBLE_DEVICES=0 python ../code/run_original.py \
     --eval_batch_size 32 \
     --evaluate_during_training \
     --save_name $save_name \
-    --seed 123456 2>&1| tee ../log/train_log/$model_type/train_$log_name.log
+    --seed 123456 2>&1| tee train_$log_name.log
