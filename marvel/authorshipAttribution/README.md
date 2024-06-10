@@ -32,6 +32,8 @@ cd dataset
 bash get_subs_alert.sh
 ```
 
+The codes for the attack algorithm comes from [ALERT](https://github.com/soarsmu/attack-pretrain-models-of-code/tree/main) and [CODA](https://github.com/tianzhaotju/CODA/tree/main), where you can refer to it for more details.
+
 ### Run MARVEL
 
 To run marvel framework, run the following instructions:

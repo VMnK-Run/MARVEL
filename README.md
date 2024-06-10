@@ -48,11 +48,13 @@ The folder structure is as follows.
 └─utils
 ```
 
+Under each subject's folder in `marvel/` (`authorshipAttribution/`, `defectPrediction/`, `Java250/`, `Python800/` and  `vulnerabilityDetection`), there are three folders (`code/`, `dataset/` and `script/`) and one `README.md` file. The original dataset and some data processing programs (for generating substitutions of attack algorithms) are stored in the `dataset/` directory. The `code/` directory contains our MARVEL codes, and attack codes (provided by [ALERT](https://github.com/soarsmu/attack-pretrain-models-of-code/tree/main) and [CODA](https://github.com/tianzhaotju/CODA/tree/main)), the `script/` directory contains commands for training and attacking.
+
 ## Experiments
 
 We applied MARVEL to three code models on five datasets and evaluated them using three attack algorithms. You can perform experiments on the corresponding downstream task in the `./marvel`.
 
-Let's take the `CodeBERT` model, `Authorship Attribution` task and the `ALERT` attack algorithm as examples. First, you need to go to `./marvel/authorshipAttribution`:
+We can refer to the ` README.md` files under each folder to train models on different tasks. Let's take the  `CodeBERT `model, `Authorship Attribution `task and the `ALERT `attack algorithm as examples. First, you need to go to `./marvel/authorshipAttribution`:
 
 ```
 cd ./marvel/authorshipAttribution
