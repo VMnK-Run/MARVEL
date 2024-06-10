@@ -113,7 +113,7 @@ class CodeBertTextDataset(Dataset):
         file_type = file_path.split('/')[-1].split('.')[0]
         folder = '/'.join(file_path.split('/')[:-1]) + '/cached'
         if not os.path.exists(folder):
-            os.mkdir(folder)
+            os.makedirs(folder)
 
         cache_file_path = os.path.join(folder, '{}_cached_{}'.format(args.model_type, file_type))
         print('\n cached_features_file: ', cache_file_path)
@@ -144,7 +144,7 @@ class GraphCodeBertTextDataset(Dataset):
         file_type = file_path.split('/')[-1].split('.')[0]
         folder = '/'.join(file_path.split('/')[:-1]) + '/cached'
         if not os.path.exists(folder):
-            os.mkdir(folder)
+            os.makedirs(folder)
         cache_file_path = os.path.join(folder, '{}_cached_{}'.format(args.model_type,file_type))
 
         print('\n cached_features_file: ',cache_file_path)
@@ -200,7 +200,7 @@ class UniXCoderTextDataset(Dataset):
         file_type = file_path.split('/')[-1].split('.')[0]
         folder = '/'.join(file_path.split('/')[:-1]) + '/cached'
         if not os.path.exists(folder):
-            os.mkdir(folder)
+            os.makedirs(folder)
         cache_file_path = os.path.join(folder, '{}_cached_{}'.format(args.model_type, file_type))
         print('\n cached_features_file: ',cache_file_path)
         try:

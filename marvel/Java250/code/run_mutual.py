@@ -756,7 +756,7 @@ def main():
     args.block_size = 512
     args.output_dir += args.model_type
     if not os.path.exists(args.output_dir):
-        os.mkdir(args.output_dir)
+        os.makedirs(args.output_dir)
 
     if args.model_type == 'codebert':
         args.config_name = "microsoft/codebert-base"

@@ -208,11 +208,9 @@ def main():
     total_cnt = 0
     success_attack = 0
     tmp_final_code = " "
-    if not os.path.exists('../log'):
-        os.mkdir('../log')
     prefix = '../log/attack_log'
     if not os.path.exists(prefix):
-        os.mkdir(prefix)
+        os.makedirs(prefix)
 
     query_times = 0
 

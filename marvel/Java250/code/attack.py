@@ -214,7 +214,7 @@ def main():
     query_times = 0
     prefix = '../log/attack_log'
     if not os.path.exists(prefix):
-        os.mkdir(prefix)
+        os.makedirs(prefix)
     for index, example in enumerate(eval_dataset):
         if index < int(args.index[0]) or index >= int(args.index[1]):
             continue
