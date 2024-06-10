@@ -85,4 +85,3 @@ CUDA_VISIBLE_DEVICES=0 python attack.py \
 ```
 
 It should be noted that substitutions need to be generated based on the original paper setting of the corresponding attack algorithm before executing the corresponding attack algorithm (e.g., ALERT and CODA).
-

@@ -67,8 +67,6 @@ def main():
                         help="model_dir")
     parser.add_argument("--subs_path", default=None, type=str,
                         help="model_dir")
-    parser.add_argument("--output_code", default=0, type=int,
-                        help="model_dir")
     parser.add_argument("--eval_batch_size", default=8, type=int,
                         help="eval batch size")
     parser.add_argument("--save_name", default='model.bin', type=str,

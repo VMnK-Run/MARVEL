@@ -25,7 +25,7 @@ bash get_subs_coda.sh
 
 ```
 
-For ALERT and MHM, you can use the file we provided, or re-run the following command:
+For ALERT and MHM, you can use the file we provided, or run the following command:
 
 ```
 cd dataset
