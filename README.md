@@ -84,4 +84,4 @@ CUDA_VISIBLE_DEVICES=0 python attack.py \
     --save_name=marvel
 ```
 
-It should be noted that substitutions need to be generated based on the original paper setting of the corresponding attack algorithm before executing the corresponding attack algorithm (e.g., ALERT and CODA).
+It should be noted that substitutions need to be generated based on the original paper setting of the corresponding attack algorithm before executing the corresponding attack algorithm (e.g., [ALERT](https://github.com/soarsmu/attack-pretrain-models-of-code/tree/main) and [CODA](https://github.com/tianzhaotju/CODA/tree/main)).

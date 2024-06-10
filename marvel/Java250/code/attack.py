@@ -66,8 +66,6 @@ def main():
                         help="info")
     parser.add_argument("--model_dir", default=None, type=str,
                         help="model_dir")
-    parser.add_argument("--output_code", default=0, type=int,
-                        help="model_dir")
     parser.add_argument("--index", nargs='+',
                         help="Optional input sequence length after tokenization.")
     parser.add_argument("--eval_batch_size", default=8, type=int,
