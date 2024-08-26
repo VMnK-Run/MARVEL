@@ -13,7 +13,7 @@ cd script
 bash train_original.sh
 ```
 
-You can modify the `model_type` field to change the code model you want to train.
+You can modify the `model_type` field to change the code model you want to train (Options: codebert, graphcodebert, unixcoder).
 
 ### Generate Substitution for the Attack Algorithms
 
@@ -43,7 +43,7 @@ cd script
 bash train_marvel.sh
 ```
 
-You can modify the `model_type` field to change the code model you want to train.
+You can modify the `model_type` field to change the code model you want to train (Options: codebert, graphcodebert, unixcoder).
 
 ### Attack Original Model and MARVEL-Enhanced Model
 
@@ -53,4 +53,4 @@ bash attack_original.sh
 bash attack_marvel.sh
 ```
 
-You can modify the `model_type` and `attack_type` field to change the code model and attack algorithm you want to use.
+You can modify the `model_type` and `attack_type` field to change the code model and attack algorithm you want to use (Options for `model_type`: codebert, graphcodebert, unixcoder, options for `attack_type`: alert, mhm, coda).
