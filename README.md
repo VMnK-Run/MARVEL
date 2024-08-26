@@ -54,17 +54,25 @@ In our artifact, we have applied MARVEL to three code models -  [CodeBERT](https
 
 The experiments related to CodeBERT and GraphCodeBERT were  conducted on an Ubuntu16.04 server with Intel(R) Xeon(R) E5 2683 v4 @2.10GHz CPU, and NVIDIA TITAN RTX GPU, and the experiments related to UniXCoder were conducted on an Ubuntu 20.04 server with Intel(R) Xeon(R) Platinum 8352V CPU@2.10GHz, and NVIDIA RTX 4090 GPU.
 
-We recommend using a similar device, with at least one NVIDIA GPU on the device.
+We recommend using a similar device, with at least one NVIDIA GPU on the device, and the experiment should be carried out under Linux system.
+
+### Environments
+
+We recommend using Anaconda to set up the experimental environment, set up your environment with the following instructions.
+
+```shell
+conda env create -n marvel -f environment.yaml
+conda activate marvel
+```
 
 ### Build `tree-sitter`
 
 We use `tree-sitter` to parse code snippets and extract variable names. You need to go to `./language_parser/parser_folder` and build tree-sitter using the following commands:
 
 ```shell
+cd ./language_parser/parser_folder
 bash build.sh
 ```
-
-
 
 ## Experiments
 
@@ -102,7 +110,7 @@ CUDA_VISIBLE_DEVICES=0 python attack.py \
     --save_name=marvel
 ```
 
-It should be noted that substitutions need to be generated based on the original paper setting of the corresponding attack algorithm before executing the corresponding attack algorithm (e.g., [ALERT](https://github.com/soarsmu/attack-pretrain-models-of-code/tree/main) and [CODA](https://github.com/tianzhaotju/CODA/tree/main)).
+It should be noted that substitutions need to be generated based on the original paper setting of the corresponding attack algorithm before executing the corresponding attack algorithm (e.g., [ALERT](https://github.com/soarsmu/attack-pretrain-models-of-code/tree/main) and [CODA](https://github.com/tianzhaotju/CODA/tree/main)). Please go to the various folders under `./marvel` for more details :)
 
 ## Acknowledgement
 
